@@ -2,15 +2,9 @@ import React from "react";
 import { Input } from "../ui/input";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { IndentDecrease, IndentIncrease, Search } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { IndentDecrease, Search } from "lucide-react";
+import Link from "next/link";
 
 const Navbar = () => {
   return (
@@ -18,13 +12,15 @@ const Navbar = () => {
       <div className="max-w-[1390px] mx-auto">
         <div className="px-4 py-4 lg:py-8 flex items-center justify-between">
           <div className="flex-shrink-0">
-            <Image
-              height={48}
-              width={244}
-              className="aspec-[48/244] w-full h-auto"
-              src="/images/logo-head.png"
-              alt="img"
-            />
+            <Link href={"/"}>
+              <Image
+                height={48}
+                width={244}
+                className="aspec-[48/244] w-full h-auto"
+                src="/images/logo-head.png"
+                alt="img"
+              />
+            </Link>
           </div>
 
           <div className="w-full max-w-xs lg:max-w-[500px] xl:max-w-[730px] bg-gray-100 rounded-md hidden lg:flex items-center border overflow-hidden">
