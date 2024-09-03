@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import ProductContainer from "../Homepage/components/ProductContainer";
+import ProductContainer from "../Homepage/ProductContainer";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";

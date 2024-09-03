@@ -1,6 +1,7 @@
 import Navbar from "@/components/Homepage/Navbar";
 import { inter } from "./fonts";
 import "./globals.css";
+import AuthProvider from "@/services/AuthProvider";
 
 export const metadata = {
   title: "FoodFarm - Grocery Store",
@@ -11,8 +12,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Navbar />
-        {children}
+        <AuthProvider>
+          <Navbar />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
