@@ -1,9 +1,5 @@
-import Homepage from "./homepage/page";
+import { permanentRedirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <main className=" min-h-screen ">
-      <Homepage />
-    </main>
-  );
+  return permanentRedirect("/homepage");
 }

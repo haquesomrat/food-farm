@@ -585,7 +585,7 @@ export const navItems = [
   {
     id: 1,
     name: "Home",
-    link: "/",
+    link: "/homepage",
   },
   {
     id: 2,

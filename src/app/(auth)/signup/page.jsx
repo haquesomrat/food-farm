@@ -16,13 +16,16 @@ const SignupPage = () => {
       role: "user",
     };
     try {
-      const resp = await fetch("https://food-farm-inj.netlify.app/signup/api", {
-        method: "POST",
-        body: JSON.stringify(newUser),
-        headers: {
-          "content-type": "application/json",
-        },
-      });
+      const resp = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/signup/api`,
+        {
+          method: "POST",
+          body: JSON.stringify(newUser),
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      );
       if (resp.ok) {
         // call swal
         console.log("User created successfully");

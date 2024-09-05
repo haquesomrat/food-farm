@@ -12,7 +12,7 @@ const ProductContainer = async () => {
       <div className="flex items-center justify-between mb-6">
         <h4>Freshly arrived</h4>
         <Button>
-          <Link href={"/meals"}>View All</Link>
+          <Link href={"/shop"}>View All</Link>
         </Button>
       </div>
       <div>

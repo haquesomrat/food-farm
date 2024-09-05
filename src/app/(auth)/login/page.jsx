@@ -16,7 +16,7 @@ const LoginPage = () => {
     const res = await signIn("credentials", {
       email,
       password,
-      redirect: false,
+      // redirect: false,
     });
     if (res.ok) {
       event.target.reset();
