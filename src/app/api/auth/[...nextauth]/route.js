@@ -1,72 +1,51 @@
 import { connectDb } from "@/lib/connectDb";
-import NextAuth from "next-auth/next";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import bcrypt from "bcrypt";
 
+const connectToDatabase = async () => {
+  if (!global.mongoClient) {
+    global.mongoClient = await connectDb();
+  }
+  return global.mongoClient;
+};
+
 const handler = NextAuth({
   session: {
     strategy: "jwt",
+    encryption: true,
+    secret: process.env.NEXTAUTH_SECRET,
     maxAge: 30 * 24 * 60 * 60,
   },
   providers: [
-    // credential providers
     CredentialsProvider({
       credentials: {
-        // email: {
-        //   label: "Email",
-        //   type: "text",
-        //   placeholder: "Enter your email",
-        //   required: true,
-        //   name: "email",
-        // },
-        // password: {
-        //   label: "Password",
-        //   type: "password",
-        //   placeholder: "Enter your password",
-        //   required: true,
-        //   name: "password",
-        // },
-        // username: {
-        //   label: "Username",
-        //   type: "text",
-        //   placeholder: "Enter your username",
-        //   required: false,
-        //   name: "username",
-        // },
         email: {},
         password: {},
       },
-
       async authorize(credentials) {
         const { email, password } = credentials;
-        if (!email || !password) {
+        if (!email || !password) return null;
+
+        try {
+          const db = await connectToDatabase();
+          const user = await db.collection("users").findOne({ email });
+
+          if (!user || !bcrypt.compareSync(password, user.password))
+            return null;
+          return user;
+        } catch (error) {
+          console.error("Error authorizing credentials:", error);
           return null;
         }
-        const db = connectDb();
-        const currentUser = await (await db)
-          .collection("users")
-          .findOne({ email });
-        if (!currentUser) {
-          return null;
-        }
-        const passwordMatched = bcrypt.compareSync(
-          password,
-          currentUser.password
-        );
-        if (!passwordMatched) {
-          return null;
-        }
-        return currentUser;
       },
     }),
-    // google provider
     GoogleProvider({
       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
       clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET,
     }),
-    // github provider
     GitHubProvider({
       clientId: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
       clientSecret: process.env.NEXT_PUBLIC_GITHUB_CLIENT_SECRET,
@@ -75,25 +54,24 @@ const handler = NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       if (account.provider === "google" || account.provider === "github") {
-        const { name, email, image } = user;
         try {
-          const db = await connectDb();
+          const db = await connectToDatabase();
           const userCollection = db.collection("users");
-          const userExist = await userCollection.findOne({ email });
-          if (!userExist) {
+          const existingUser = await userCollection.findOne({
+            email: user.email,
+          });
+
+          if (!existingUser) {
             user.role = "user";
-            const res = userCollection.insertOne(user);
-            return user;
-          } else {
-            return user;
+            await userCollection.insertOne(user);
           }
+          return true;
         } catch (error) {
-          console.log(error);
+          console.error("Error in signIn callback:", error);
           return false;
         }
-      } else {
-        return user;
       }
+      return true;
     },
     async jwt({ token, account, user }) {
       if (account) {
